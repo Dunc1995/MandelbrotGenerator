@@ -13,33 +13,42 @@ namespace MandelbrotGenerator
 {
     public partial class MainDisplay : Form
     {
+        public int pictureWidth { get; }
+        public int pictureHeight { get; }
+
         public MainDisplay()
         {
-            InitializeComponent();
-            int width = pictureBox1.Width;
-            int height = pictureBox1.Height;         
+            int scaleFactor = 16;
 
-            Bitmap image = new Bitmap(width, height);
+            InitializeComponent();
+            pictureWidth = pictureBox1.Width * scaleFactor;
+            pictureHeight = pictureBox1.Height * scaleFactor;         
+
+            Bitmap image = new Bitmap(pictureWidth, pictureHeight);
             Random rand = new Random();
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < pictureWidth; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < pictureHeight; y++)
                 {
                     int a = 255;
                     
                     PointF point = GetFloatingPointValue(x, y);
                     int sample = IterateValue(point);
-                    int r = sample;
-                    int g = sample;
-                    int b = sample;
 
+                    double trigScaling = 0.0246;
+
+                    int r = (int)Math.Round(Math.Sin(trigScaling * sample - 0) * 127 + 128);
+                    int g = (int)Math.Round(Math.Sin(trigScaling * sample - (2*Math.PI/3)) * 127 + 128);
+                    int b = (int)Math.Round(Math.Sin(trigScaling * sample - (4*Math.PI/3)) * 127 + 128);
 
                     image.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
             }
 
+            image.Save(@"C:\Users\Duncan\Desktop\Mandelbrot.bmp");
             pictureBox1.Image = image;
+
         }
 
         /// <summary>
@@ -53,11 +62,11 @@ namespace MandelbrotGenerator
         public PointF GetFloatingPointValue(int pixelX, int pixelY)
         {
 
-            int width = pictureBox1.Width;
-            int height = pictureBox1.Height;
+            int width = pictureWidth;
+            int height = pictureHeight;
             int minorViewportDimension = (width > height) ? height : width;
 
-            float scalingValue = minorViewportDimension / 4;
+            float scalingValue = minorViewportDimension / 3;
 
             float centreX = width / 2;
             float centreY = height / 2;
