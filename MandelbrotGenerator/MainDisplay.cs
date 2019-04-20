@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Numerics;
 
 namespace MandelbrotGenerator
 {
@@ -26,19 +27,13 @@ namespace MandelbrotGenerator
                 for (int y = 0; y < height; y++)
                 {
                     int a = 255;
-                    int r = 255;
-                    int g = 255;
-                    int b = 255;
                     
                     PointF point = GetFloatingPointValue(x, y);
+                    int sample = IterateValue(point);
+                    int r = sample;
+                    int g = sample;
+                    int b = sample;
 
-                    double Magnitude = Math.Sqrt(Math.Pow(point.X, 2) + Math.Pow(point.Y, 2));
-                    if (Magnitude >= 2)
-                    {
-                        r = 0;
-                        g = 0;
-                        b = 0;
-                    }
 
                     image.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
@@ -71,6 +66,24 @@ namespace MandelbrotGenerator
             float scaledY = (pixelY - centreY) / scalingValue;
 
             return new PointF(scaledX, scaledY);
+        }
+
+        public int IterateValue(PointF complexPoint)
+        {
+            int count = 0;
+            Complex complexNumber = new Complex(complexPoint.X, complexPoint.Y);
+
+            Complex iteratedComplexNumber = complexNumber;
+
+            while (count < 255 && !iteratedComplexNumber.Magnitude.Equals(0) && iteratedComplexNumber.Magnitude < 2)
+            {
+                iteratedComplexNumber = Complex.Add(
+                    Complex.Pow(iteratedComplexNumber, 2), 
+                    complexNumber);
+                count++;
+            }
+
+            return count;
         }
     }
 }
