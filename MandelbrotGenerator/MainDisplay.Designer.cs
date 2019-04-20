@@ -45,10 +45,14 @@
             this.pixelCountTextbox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.previewCheckBox = new System.Windows.Forms.CheckBox();
+            this.phaseTrackBar = new System.Windows.Forms.TrackBar();
+            this.frequencyTrackBar = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.optionsGroupBox.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.phaseTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.frequencyTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -68,10 +72,11 @@
             this.maxRealTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.maxRealTextbox.Location = new System.Drawing.Point(42, 3);
+            this.maxRealTextbox.Location = new System.Drawing.Point(51, 3);
             this.maxRealTextbox.Name = "maxRealTextbox";
-            this.maxRealTextbox.Size = new System.Drawing.Size(85, 20);
+            this.maxRealTextbox.Size = new System.Drawing.Size(75, 20);
             this.maxRealTextbox.TabIndex = 2;
+            this.maxRealTextbox.Text = "1.1";
             this.maxRealTextbox.TextChanged += new System.EventHandler(this.maxRealTextbox_TextChanged);
             // 
             // minRealTextbox
@@ -79,10 +84,11 @@
             this.minRealTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.minRealTextbox.Location = new System.Drawing.Point(42, 33);
+            this.minRealTextbox.Location = new System.Drawing.Point(51, 33);
             this.minRealTextbox.Name = "minRealTextbox";
-            this.minRealTextbox.Size = new System.Drawing.Size(85, 20);
+            this.minRealTextbox.Size = new System.Drawing.Size(75, 20);
             this.minRealTextbox.TabIndex = 3;
+            this.minRealTextbox.Text = "-2";
             this.minRealTextbox.TextChanged += new System.EventHandler(this.minRealTextbox_TextChanged);
             // 
             // maxImaginaryTextbox
@@ -90,10 +96,11 @@
             this.maxImaginaryTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.maxImaginaryTextbox.Location = new System.Drawing.Point(172, 3);
+            this.maxImaginaryTextbox.Location = new System.Drawing.Point(175, 3);
             this.maxImaginaryTextbox.Name = "maxImaginaryTextbox";
-            this.maxImaginaryTextbox.Size = new System.Drawing.Size(86, 20);
+            this.maxImaginaryTextbox.Size = new System.Drawing.Size(179, 20);
             this.maxImaginaryTextbox.TabIndex = 1;
+            this.maxImaginaryTextbox.Text = "1.3";
             this.maxImaginaryTextbox.TextChanged += new System.EventHandler(this.maxImaginaryTextbox_TextChanged);
             // 
             // minImaginaryTextbox
@@ -101,10 +108,11 @@
             this.minImaginaryTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.minImaginaryTextbox.Location = new System.Drawing.Point(172, 33);
+            this.minImaginaryTextbox.Location = new System.Drawing.Point(175, 33);
             this.minImaginaryTextbox.Name = "minImaginaryTextbox";
-            this.minImaginaryTextbox.Size = new System.Drawing.Size(86, 20);
+            this.minImaginaryTextbox.Size = new System.Drawing.Size(179, 20);
             this.minImaginaryTextbox.TabIndex = 4;
+            this.minImaginaryTextbox.Text = "-1.3";
             this.minImaginaryTextbox.TextChanged += new System.EventHandler(this.minImaginaryTextbox_TextChanged);
             // 
             // tableLayoutPanel1
@@ -112,11 +120,13 @@
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.04348F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.43478F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.04348F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30.43478F));
+            this.tableLayoutPanel1.ColumnCount = 6;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.15242F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.53211F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 9.908257F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42.20184F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18.34862F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 106F));
             this.tableLayoutPanel1.Controls.Add(this.label5, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.label4, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
@@ -125,12 +135,14 @@
             this.tableLayoutPanel1.Controls.Add(this.minRealTextbox, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.maxImaginaryTextbox, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.maxRealTextbox, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.phaseTrackBar, 5, 0);
+            this.tableLayoutPanel1.Controls.Add(this.frequencyTrackBar, 5, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 19);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(261, 61);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(545, 61);
             this.tableLayoutPanel1.TabIndex = 5;
             // 
             // label5
@@ -139,9 +151,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(133, 30);
+            this.label5.Location = new System.Drawing.Point(132, 30);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(33, 31);
+            this.label5.Size = new System.Drawing.Size(37, 31);
             this.label5.TabIndex = 10;
             this.label5.Text = "min i";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -154,7 +166,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 30);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(33, 31);
+            this.label4.Size = new System.Drawing.Size(42, 31);
             this.label4.TabIndex = 9;
             this.label4.Text = "min r";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -167,7 +179,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(33, 30);
+            this.label2.Size = new System.Drawing.Size(42, 30);
             this.label2.TabIndex = 7;
             this.label2.Text = "max r";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -178,9 +190,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(133, 0);
+            this.label1.Location = new System.Drawing.Point(132, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(33, 30);
+            this.label1.Size = new System.Drawing.Size(37, 30);
             this.label1.TabIndex = 6;
             this.label1.Text = "max i";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -282,6 +294,26 @@
             this.previewCheckBox.Text = "Preview";
             this.previewCheckBox.UseVisualStyleBackColor = true;
             // 
+            // phaseTrackBar
+            // 
+            this.phaseTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.phaseTrackBar.Location = new System.Drawing.Point(440, 3);
+            this.phaseTrackBar.Name = "phaseTrackBar";
+            this.phaseTrackBar.Size = new System.Drawing.Size(102, 24);
+            this.phaseTrackBar.TabIndex = 12;
+            this.phaseTrackBar.Scroll += new System.EventHandler(this.phaseTrackBar_Scroll);
+            // 
+            // frequencyTrackBar
+            // 
+            this.frequencyTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.frequencyTrackBar.Location = new System.Drawing.Point(440, 33);
+            this.frequencyTrackBar.Name = "frequencyTrackBar";
+            this.frequencyTrackBar.Size = new System.Drawing.Size(102, 25);
+            this.frequencyTrackBar.TabIndex = 13;
+            this.frequencyTrackBar.Scroll += new System.EventHandler(this.frequencyTrackBar_Scroll);
+            // 
             // MainDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -299,6 +331,8 @@
             this.optionsGroupBox.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.phaseTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.frequencyTrackBar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -322,6 +356,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox previewCheckBox;
         private System.Windows.Forms.Button generateImageButton;
+        private System.Windows.Forms.TrackBar phaseTrackBar;
+        private System.Windows.Forms.TrackBar frequencyTrackBar;
     }
 }
 

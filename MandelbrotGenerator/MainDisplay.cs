@@ -22,10 +22,13 @@ namespace MandelbrotGenerator
         public double ScalingValue { get; set; }
         public int PreviewPixelCount { get; } = 250;
         public Bitmap CurrentImage { get; set; }
+        public double FrequencyScale { get; set; } = 1;
+        public double PhaseOffset { get; set; } = 0;
 
         public MainDisplay()
         {
             InitializeComponent();
+            PreviewImage();
         }
 
         public void GenerateImage(double maxR, double minR, double maxI, double minI, int pixelCount)
@@ -59,9 +62,9 @@ namespace MandelbrotGenerator
 
                     double trigScaling = 0.0246;
 
-                    int r = (int)Math.Round(Math.Sin(trigScaling * sample - 0) * 127 + 128);
-                    int g = (int)Math.Round(Math.Sin(trigScaling * sample - (2 * Math.PI / 3)) * 127 + 128);
-                    int b = (int)Math.Round(Math.Sin(trigScaling * sample - (4 * Math.PI / 3)) * 127 + 128);
+                    int r = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset) * 127 + 128);
+                    int g = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (2 * Math.PI / 3)) * 127 + 128);
+                    int b = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (4 * Math.PI / 3)) * 127 + 128);
 
                     CurrentImage.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
@@ -104,10 +107,10 @@ namespace MandelbrotGenerator
             return count;
         }
 
-        public double MaxR { get; set; }
-        public double MinR { get; set; }
-        public double MaxI { get; set; }
-        public double MinI { get; set; }
+        public double MaxR { get; set; } = 2;
+        public double MinR { get; set; } = -2;
+        public double MaxI { get; set; } = 2;
+        public double MinI { get; set; } = -2;
         public int Pixels { get; set; }
 
         private void generateImageButton_Click(object sender, EventArgs e)
@@ -203,6 +206,18 @@ namespace MandelbrotGenerator
 
             string path = saveDialog.FileName;
             CurrentImage.Save(path);
+        }
+
+        private void phaseTrackBar_Scroll(object sender, EventArgs e)
+        {
+            PhaseOffset = phaseTrackBar.Value * 0.628;
+            PreviewImage();
+        }
+
+        private void frequencyTrackBar_Scroll(object sender, EventArgs e)
+        {
+            FrequencyScale = frequencyTrackBar.Value;
+            PreviewImage();
         }
     }
 }
