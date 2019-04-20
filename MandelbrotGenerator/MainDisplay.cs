@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace MandelbrotGenerator
 {
-    public partial class Form1 : Form
+    public partial class MainDisplay : Form
     {
-        public Form1()
+        public MainDisplay()
         {
             InitializeComponent();
         }

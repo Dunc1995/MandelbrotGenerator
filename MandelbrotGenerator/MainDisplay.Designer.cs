@@ -1,6 +1,6 @@
 ﻿namespace MandelbrotGenerator
 {
-    partial class Form1
+    partial class MainDisplay
     {
         /// <summary>
         /// Required designer variable.
@@ -40,7 +40,7 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // Form1
+            // MainDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -48,8 +48,9 @@
             this.Controls.Add(this.pictureBox1);
             this.MaximumSize = new System.Drawing.Size(816, 489);
             this.MinimumSize = new System.Drawing.Size(816, 489);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "MainDisplay";
+            this.ShowIcon = false;
+            this.Text = "Mandelbrot Generator";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
