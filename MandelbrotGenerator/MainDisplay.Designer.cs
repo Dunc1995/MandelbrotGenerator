@@ -36,6 +36,7 @@
             this.saveImageButton = new System.Windows.Forms.Button();
             this.frequencyTrackBar = new System.Windows.Forms.TrackBar();
             this.phaseTrackBar = new System.Windows.Forms.TrackBar();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.optionsGroupBox.SuspendLayout();
@@ -149,6 +150,12 @@
             this.phaseTrackBar.TabIndex = 12;
             this.phaseTrackBar.Scroll += new System.EventHandler(this.phaseTrackBar_Scroll);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // MainDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -181,6 +188,7 @@
         private System.Windows.Forms.Button generateImageButton;
         private System.Windows.Forms.TrackBar frequencyTrackBar;
         private System.Windows.Forms.TrackBar phaseTrackBar;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 

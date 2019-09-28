@@ -24,7 +24,9 @@ namespace MandelbrotGenerator
         public MainDisplay()
         {
             InitializeComponent();
-            Application.StartupMain(ref pictureBox1);           
+            Application.StartupMain(ref pictureBox1);
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
         }
 
         private void generateImageButton_Click(object sender, EventArgs e)
@@ -51,7 +53,7 @@ namespace MandelbrotGenerator
         private void phaseTrackBar_Scroll(object sender, EventArgs e)
         {
             Application.PhaseOffset = phaseTrackBar.Value * 0.628;
-            Application.PreviewMandelbrotImage(ref pictureBox1);
+            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();           
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace MandelbrotGenerator
         private void frequencyTrackBar_Scroll(object sender, EventArgs e)
         {
             Application.FrequencyScale = frequencyTrackBar.Value;
-            Application.PreviewMandelbrotImage(ref pictureBox1);
+            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();                        
         }
 
         private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -78,16 +80,16 @@ namespace MandelbrotGenerator
                 int absSelectWidth = Math.Abs(e.X - selectX);
                 int absSelectHeight = Math.Abs(e.Y - selectY);
                 int posX = (selectWidth >= 0) ? selectX : e.X;
-                int posY = (selectHeight >= 0) ? selectY : e.Y;
+                int posY = (selectHeight >= 0) ? selectY : e.Y;             
 
                 //draw dotted rectangle
                 FontFamily fontFamily = new FontFamily("Arial");
                 Font font = new Font(
                    fontFamily,
-                   12,
+                   10,
                    FontStyle.Regular,
                    GraphicsUnit.Point);
-                SolidBrush solidBrush = new SolidBrush(Color.Red);
+                SolidBrush solidBrush = new SolidBrush(Application.ContrastingColor);
 
 
                 Rectangle rect = new Rectangle(posX, posY, absSelectWidth, absSelectHeight);
@@ -104,7 +106,7 @@ namespace MandelbrotGenerator
                 {
                     selectX = e.X;
                     selectY = e.Y;
-                    selectPen = new Pen(Color.Red, 2);
+                    selectPen = new Pen(Application.ContrastingColor, 1);
                     selectPen.DashStyle = DashStyle.Dot;
                 }
                 else
@@ -114,6 +116,35 @@ namespace MandelbrotGenerator
 
                 IsDrawingActive = !IsDrawingActive;
             }
+        }
+
+        // This event handler is where the time-consuming work is done.
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Application.PreviewMandelbrotImage(ref pictureBox1, Application.CurrentIPlaneBounds);
+        }
+
+        // This event handler updates the progress.
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+//            resultLabel.Text = (e.ProgressPercentage.ToString() + "%");
+        }
+
+        // This event handler deals with the results of the background operation.
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //if (e.Cancelled == true)
+            //{
+            //    resultLabel.Text = "Canceled!";
+            //}
+            //else if (e.Error != null)
+            //{
+            //    resultLabel.Text = "Error: " + e.Error.Message;
+            //}
+            //else
+            //{
+            //    resultLabel.Text = "Done!";
+            //}
         }
     }
 }

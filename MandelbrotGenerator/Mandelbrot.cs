@@ -24,11 +24,11 @@ namespace MandelbrotGenerator
         {
             public IPoint(double scalingValue, IPlaneDimensions iPlaneDimensions, Point point)
             {
-                X = ((scalingValue * point.X) + iPlaneDimensions.MinimumRealValue);
+                R = ((scalingValue * point.X) + iPlaneDimensions.MinimumRealValue);
                 I = ((scalingValue * point.Y) + iPlaneDimensions.MinimumImaginaryValue);
             }
 
-            public double X { get; }
+            public double R { get; }
             public double I { get; }
         }
 
@@ -78,12 +78,12 @@ namespace MandelbrotGenerator
 
                 if (pictureAspectRatio < 0)
                 {
-                    height = uiImage.Height;
+                    height = (uiImage.Height <= 500) ? uiImage.Height: 500;
                     width = GetCorrespondingPixelCount(height, false, iPlaneDimensions); 
                 }
                 else
                 {
-                    width = uiImage.Width;
+                    width = (uiImage.Width <= 500) ? uiImage.Width : 500;
                     height = GetCorrespondingPixelCount(width, true, iPlaneDimensions);
                 }
 
@@ -139,13 +139,13 @@ namespace MandelbrotGenerator
                         int a = 255;
 
                         IPoint point = new IPoint(scaling, iPlaneDimensions, new Point(x, y));
-                        int sample = GetIteratedIntegerValue(point);
+                        int iterationCount = GetIteratedIntegerValue(point);
 
                         double trigScaling = 0.0246;
 
-                        int r = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset) * 127 + 128);
-                        int g = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset - (2 * Math.PI / 3)) * 127 + 128);
-                        int b = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset - (4 * Math.PI / 3)) * 127 + 128);
+                        int r = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset) * 127 + 128);
+                        int g = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset - (2 * Math.PI / 3)) * 127 + 128);
+                        int b = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset - (4 * Math.PI / 3)) * 127 + 128);
 
                         emptyBitmap.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                     }
@@ -161,7 +161,7 @@ namespace MandelbrotGenerator
             private static int GetIteratedIntegerValue(IPoint point)
             {
                 int count = 0;
-                Complex complexNumber = new Complex(point.X, point.I);
+                Complex complexNumber = new Complex(point.R, point.I);
 
                 Complex iteratedComplexNumber = complexNumber;
 
