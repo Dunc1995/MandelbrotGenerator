@@ -116,23 +116,13 @@ namespace MandelbrotGenerator
 
         private void generateImageButton_Click(object sender, EventArgs e)
         {
-            if (ValidateInputs())
-            {
                 GenerateImage(MaximumRealValue, MinimumRealValue, MaximumImaginaryValue, MinimumImaginaryValue, Pixels);
-            }
         }
+
 
         private void PreviewImage()
         {
-            if (ValidateInputs())
-            {
                 GenerateImage(MaximumRealValue, MinimumRealValue, MaximumImaginaryValue, MinimumImaginaryValue, PreviewPixelCount);
-            }
-        }
-
-        private bool ValidateInputs()
-        {
-            return (MaximumRealValue > MinimumRealValue && MaximumImaginaryValue > MinimumImaginaryValue);
         }
 
         private void saveImageButton_Click(object sender, EventArgs e)
