@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace MandelbrotGenerator
 {
-    public class Mandelbrot
+    public class MandelbrotUtils
     {
 
         /// <summary>
@@ -27,6 +27,12 @@ namespace MandelbrotGenerator
             {
                 R = ((scaling * point.X) + iPlaneDimensions.MinimumRealValue);
                 I = ((scaling * point.Y) + iPlaneDimensions.MinimumImaginaryValue);
+            }
+
+            public IPoint(Point offsetDimensions, Point point)
+            {
+                R = ((scaling * point.X) + offsetDimensions.X);
+                I = ((scaling * point.Y) + offsetDimensions.Y);
             }
 
             public double R { get; }
@@ -55,13 +61,12 @@ namespace MandelbrotGenerator
             public double MaximumImaginaryValue { get; }
             public double GetRealRange() { return MaximumRealValue - MinimumRealValue; }
             public double GetImaginaryRange() { return MaximumImaginaryValue - MinimumImaginaryValue; }
-            public double GetAspectRatio() { return GetImaginaryRange() / GetRealRange(); }
         }
 
         /// <summary>
         /// Scaling class contains utilities to map imaginary coordinates to image pixels. 
         /// </summary>
-        public static class ScalingUtils
+        public static class Scaling
         {
             /// <summary>
             /// Compares dimensions in the imaginary place with dimensions
@@ -75,9 +80,8 @@ namespace MandelbrotGenerator
             {
                 int height;
                 int width;
-                double pictureAspectRatio = uiImage.Height / uiImage.Width;
 
-                if (pictureAspectRatio < 0)
+                if (uiImage.Height < uiImage.Width)
                 {
                     height = (uiImage.Height <= 500) ? uiImage.Height: 500;
                     width = GetCorrespondingPixelCount(height, false, iPlaneDimensions); 

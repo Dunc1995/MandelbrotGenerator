@@ -28,10 +28,9 @@ namespace MandelbrotGenerator
         public MainDisplay()
         {
             InitializeComponent();
-            Application.StartupMain(ref pictureBox1);
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
-            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
+            ExecuteBackgroundWorker();
         }
 
         private void generateImageButton_Click(object sender, EventArgs e)
@@ -58,7 +57,7 @@ namespace MandelbrotGenerator
         private void phaseTrackBar_Scroll(object sender, EventArgs e)
         {
             Application.PhaseOffset = phaseTrackBar.Value * 0.628;
-            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();           
+            ExecuteBackgroundWorker();
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace MandelbrotGenerator
         private void frequencyTrackBar_Scroll(object sender, EventArgs e)
         {
             Application.FrequencyScale = frequencyTrackBar.Value;
-            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();                        
+            ExecuteBackgroundWorker();
         }
 
         private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -91,8 +90,9 @@ namespace MandelbrotGenerator
                 int offsetX = ((pictureBox1.Width - pictureBox1.Image.Width) / 2);
                 int offsetY = ((pictureBox1.Height - pictureBox1.Image.Height) / 2);
 
-                Mandelbrot.IPoint point1 = new Mandelbrot.IPoint(Application.CurrentIPlaneBounds, new Point(posX1 - offsetX, posY1 - offsetY));
-                Mandelbrot.IPoint point2 = new Mandelbrot.IPoint(Application.CurrentIPlaneBounds, new Point(posX2 - offsetX, posY2 - offsetY));
+                MandelbrotUtils.IPoint point1 = new MandelbrotUtils.IPoint(Application.CurrentIPlaneBounds, new Point(posX1 - offsetX, posY1 - offsetY));
+                MandelbrotUtils.IPoint point2 = new MandelbrotUtils.IPoint(Application.CurrentIPlaneBounds, new Point(posX2 - offsetX, posY2 - offsetY));
+
                 MinR = (point1.R > point2.R) ? point2.R : point1.R;
                 MaxR = (point1.R < point2.R) ? point2.R : point1.R;
                 MinI = (point1.I > point2.I) ? point2.I : point1.I;
@@ -110,8 +110,8 @@ namespace MandelbrotGenerator
 
                 Rectangle rect = new Rectangle(posX1, posY1, absSelectWidth, absSelectHeight);
                 pictureBox1.CreateGraphics().DrawRectangle(selectPen, rect);
-                pictureBox1.CreateGraphics().DrawString(string.Format("posx:{0},\n posy:{1}", posX1, posY1), font, solidBrush, new PointF(posX1, posY1));
-                pictureBox1.CreateGraphics().DrawString(string.Format("posx:{0},\n posy:{1}", posX2, posY2), font, solidBrush, new PointF(posX2, posY2));
+                pictureBox1.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", point1.R, point1.I), font, solidBrush, new PointF(posX1, posY1));
+                pictureBox1.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", point2.R, point2.I), font, solidBrush, new PointF(posX2, posY2));
             }
         }
 
@@ -129,13 +129,18 @@ namespace MandelbrotGenerator
                 else
                 {
                     pictureBox1.Invalidate();
-                    Mandelbrot.IPlaneDimensions iPlaneDimensions = new Mandelbrot.IPlaneDimensions(MinR, MaxR, MinI, MaxI);
+                    MandelbrotUtils.IPlaneDimensions iPlaneDimensions = new MandelbrotUtils.IPlaneDimensions(MinR, MaxR, MinI, MaxI);
                     Application.UpdateIPlaneAndBitmapDimensions(ref pictureBox1, iPlaneDimensions);
-                    if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
+                    ExecuteBackgroundWorker();
                 }
 
                 IsDrawingActive = !IsDrawingActive;
             }
+        }
+
+        private void ExecuteBackgroundWorker()
+        {
+            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
         }
 
         // This event handler is where the time-consuming work is done.

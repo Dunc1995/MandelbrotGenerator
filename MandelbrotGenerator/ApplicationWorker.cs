@@ -22,47 +22,25 @@ namespace MandelbrotGenerator
         public double Scaling { get; set; }
         public Color ContrastingColor { get; set; }
         public Bitmap CurrentBitmap { get; set; }
-        public Mandelbrot.IPlaneDimensions CurrentIPlaneBounds { get { return currentIPlaneBounds; } }
+        public MandelbrotUtils.IPlaneDimensions CurrentIPlaneBounds { get { return currentIPlaneBounds; } }
         public Bitmap CurrentEmptyBitmap { get { return currentEmptyBitmap; } }
-        private Mandelbrot.IPlaneDimensions currentIPlaneBounds { get; set; } = Mandelbrot.DefaultIPlaneDimensions;
-        private Bitmap currentEmptyBitmap { get; set; }
-        
+        private MandelbrotUtils.IPlaneDimensions currentIPlaneBounds { get; set; } = MandelbrotUtils.DefaultIPlaneDimensions;
+        private Bitmap currentEmptyBitmap { get; set; }      
 
-        public void StartupMain(ref PictureBox pictureBox)
+        public void PreviewMandelbrotImage(ref PictureBox pictureBox, MandelbrotUtils.IPlaneDimensions iPlaneDimensions)
         {
-            try
-            {
-                CurrentBitmap = GetPreviewImage();
-                ContrastingColor = GetContrastingColor(CurrentBitmap.GetPixel(0, 0));
-                pictureBox.Image = CurrentBitmap;
-                currentEmptyBitmap = Mandelbrot.ScalingUtils.GetEmptyPreviewBitmap(pictureBox, CurrentIPlaneBounds); 
-            }
-            catch (Exception)
-            {
-
-            }           
-        }
-
-        public void PreviewMandelbrotImage(ref PictureBox pictureBox, Mandelbrot.IPlaneDimensions iPlaneDimensions)
-        {
-            Bitmap image = CurrentEmptyBitmap;
-            Mandelbrot.Mathematics.GenerateMandelbrotImage(ref image, iPlaneDimensions, FrequencyScale, PhaseOffset);
+            currentEmptyBitmap = MandelbrotUtils.Scaling.GetEmptyPreviewBitmap(pictureBox, CurrentIPlaneBounds);
+            Bitmap image = currentEmptyBitmap;
+            MandelbrotUtils.Mathematics.GenerateMandelbrotImage(ref image, iPlaneDimensions, FrequencyScale, PhaseOffset);
             CurrentBitmap = image;
             ContrastingColor = GetContrastingColor(image.GetPixel(0, 0));
             pictureBox.Image = CurrentBitmap;
         }
 
-        public void UpdateIPlaneAndBitmapDimensions(ref PictureBox pictureBox, Mandelbrot.IPlaneDimensions iPlaneDimensions)
+        public void UpdateIPlaneAndBitmapDimensions(ref PictureBox pictureBox, MandelbrotUtils.IPlaneDimensions iPlaneDimensions)
         {
             currentIPlaneBounds = iPlaneDimensions;
-            currentEmptyBitmap = Mandelbrot.ScalingUtils.GetEmptyPreviewBitmap(pictureBox, iPlaneDimensions);
-        }
-
-        private Bitmap GetPreviewImage()
-        {
-            Assembly myAssembly = Assembly.GetExecutingAssembly();
-            Stream myStream = myAssembly.GetManifestResourceStream("MandelbrotGenerator.resources.preview.bmp");
-            return new Bitmap(myStream);
+            currentEmptyBitmap = MandelbrotUtils.Scaling.GetEmptyPreviewBitmap(pictureBox, iPlaneDimensions);
         }
 
         private static Color GetContrastingColor(Color color)

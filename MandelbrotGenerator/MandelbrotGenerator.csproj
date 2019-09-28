@@ -54,7 +54,7 @@
     <Compile Include="MainDisplay.Designer.cs">
       <DependentUpon>MainDisplay.cs</DependentUpon>
     </Compile>
-    <Compile Include="Mandelbrot.cs" />
+    <Compile Include="MandelbrotUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainDisplay.resx">
@@ -83,8 +83,5 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <EmbeddedResource Include="resources\preview.bmp" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
