@@ -16,16 +16,17 @@ namespace MandelbrotGenerator
         /// Default coordinates, in the imaginary plane, to capture the whole Mandelbrot set,
         /// </summary>
         public static IPlaneDimensions DefaultIPlaneDimensions { get; } = new IPlaneDimensions(-2, 1.1, -1.3, 1.3);
+        private static double scaling { get; set; }
 
         /// <summary>
         /// Precision coordinate in the imaginary plane.
         /// </summary>
         public class IPoint
         {
-            public IPoint(double scalingValue, IPlaneDimensions iPlaneDimensions, Point point)
+            public IPoint(IPlaneDimensions iPlaneDimensions, Point point)
             {
-                R = ((scalingValue * point.X) + iPlaneDimensions.MinimumRealValue);
-                I = ((scalingValue * point.Y) + iPlaneDimensions.MinimumImaginaryValue);
+                R = ((scaling * point.X) + iPlaneDimensions.MinimumRealValue);
+                I = ((scaling * point.Y) + iPlaneDimensions.MinimumImaginaryValue);
             }
 
             public double R { get; }
@@ -102,13 +103,13 @@ namespace MandelbrotGenerator
                 int correspondingPixels;
                 if (isPixelRangeOnXAxis)
                 {
-                    double scaling = existingPixelRange / iPlaneDimensions.GetRealRange();
-                    correspondingPixels = (int)Math.Round(scaling * iPlaneDimensions.GetImaginaryRange());
+                    double pixelScaling = existingPixelRange / iPlaneDimensions.GetRealRange();
+                    correspondingPixels = (int)Math.Round(pixelScaling * iPlaneDimensions.GetImaginaryRange());
                 }
                 else
                 {
-                    double scaling = existingPixelRange / iPlaneDimensions.GetImaginaryRange();
-                    correspondingPixels = (int)Math.Round(scaling * iPlaneDimensions.GetRealRange());
+                    double pixelScaling = existingPixelRange / iPlaneDimensions.GetImaginaryRange();
+                    correspondingPixels = (int)Math.Round(pixelScaling * iPlaneDimensions.GetRealRange());
                 }
                 return correspondingPixels;
             }
@@ -130,7 +131,7 @@ namespace MandelbrotGenerator
                 double scalingY = iPlaneDimensions.GetImaginaryRange() / emptyBitmap.Height;
                 double delta = Math.Abs(scalingX - scalingY);
                 if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions! They need identical aspect ratios.");
-                double scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical.
+                scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical.
 
                 for (int x = 0; x < emptyBitmap.Width; x++)
                 {
@@ -138,7 +139,7 @@ namespace MandelbrotGenerator
                     {
                         int a = 255;
 
-                        IPoint point = new IPoint(scaling, iPlaneDimensions, new Point(x, y));
+                        IPoint point = new IPoint(iPlaneDimensions, new Point(x, y));
                         int iterationCount = GetIteratedIntegerValue(point);
 
                         double trigScaling = 0.0246;

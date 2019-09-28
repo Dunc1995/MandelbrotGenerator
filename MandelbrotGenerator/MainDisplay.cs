@@ -19,6 +19,10 @@ namespace MandelbrotGenerator
         private bool IsDrawingActive { get; set; } = false;
         int selectX;
         int selectY;
+        double MinR { get; set; }
+        double MaxR { get; set; }
+        double MinI { get; set; }
+        double MaxI { get; set; }
 
         public Pen selectPen;
         public MainDisplay()
@@ -27,6 +31,7 @@ namespace MandelbrotGenerator
             Application.StartupMain(ref pictureBox1);
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
+            if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
         }
 
         private void generateImageButton_Click(object sender, EventArgs e)
@@ -79,8 +84,19 @@ namespace MandelbrotGenerator
                 double selectHeight = e.Y - selectY;
                 int absSelectWidth = Math.Abs(e.X - selectX);
                 int absSelectHeight = Math.Abs(e.Y - selectY);
-                int posX = (selectWidth >= 0) ? selectX : e.X;
-                int posY = (selectHeight >= 0) ? selectY : e.Y;             
+                int posX1 = (selectWidth >= 0) ? selectX : e.X;
+                int posY1 = (selectHeight >= 0) ? selectY : e.Y;
+                int posX2 = (selectWidth >= 0) ? e.X: selectX;
+                int posY2 = (selectHeight >= 0) ? e.Y: selectY;
+                int offsetX = ((pictureBox1.Width - pictureBox1.Image.Width) / 2);
+                int offsetY = ((pictureBox1.Height - pictureBox1.Image.Height) / 2);
+
+                Mandelbrot.IPoint point1 = new Mandelbrot.IPoint(Application.CurrentIPlaneBounds, new Point(posX1 - offsetX, posY1 - offsetY));
+                Mandelbrot.IPoint point2 = new Mandelbrot.IPoint(Application.CurrentIPlaneBounds, new Point(posX2 - offsetX, posY2 - offsetY));
+                MinR = (point1.R > point2.R) ? point2.R : point1.R;
+                MaxR = (point1.R < point2.R) ? point2.R : point1.R;
+                MinI = (point1.I > point2.I) ? point2.I : point1.I;
+                MaxI = (point1.I < point2.I) ? point2.I : point1.I;               
 
                 //draw dotted rectangle
                 FontFamily fontFamily = new FontFamily("Arial");
@@ -92,9 +108,10 @@ namespace MandelbrotGenerator
                 SolidBrush solidBrush = new SolidBrush(Application.ContrastingColor);
 
 
-                Rectangle rect = new Rectangle(posX, posY, absSelectWidth, absSelectHeight);
+                Rectangle rect = new Rectangle(posX1, posY1, absSelectWidth, absSelectHeight);
                 pictureBox1.CreateGraphics().DrawRectangle(selectPen, rect);
-                pictureBox1.CreateGraphics().DrawString(string.Format("width:{0}, height:{1}", absSelectWidth, absSelectHeight), font, solidBrush, new PointF(posX, posY));
+                pictureBox1.CreateGraphics().DrawString(string.Format("posx:{0},\n posy:{1}", posX1, posY1), font, solidBrush, new PointF(posX1, posY1));
+                pictureBox1.CreateGraphics().DrawString(string.Format("posx:{0},\n posy:{1}", posX2, posY2), font, solidBrush, new PointF(posX2, posY2));
             }
         }
 
@@ -112,6 +129,9 @@ namespace MandelbrotGenerator
                 else
                 {
                     pictureBox1.Invalidate();
+                    Mandelbrot.IPlaneDimensions iPlaneDimensions = new Mandelbrot.IPlaneDimensions(MinR, MaxR, MinI, MaxI);
+                    Application.UpdateIPlaneAndBitmapDimensions(ref pictureBox1, iPlaneDimensions);
+                    if (!backgroundWorker1.IsBusy) backgroundWorker1.RunWorkerAsync();
                 }
 
                 IsDrawingActive = !IsDrawingActive;

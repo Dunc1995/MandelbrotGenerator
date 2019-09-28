@@ -19,6 +19,7 @@ namespace MandelbrotGenerator
 
         public double FrequencyScale { get; set; } = 1;
         public double PhaseOffset { get; set; } = 0;
+        public double Scaling { get; set; }
         public Color ContrastingColor { get; set; }
         public Bitmap CurrentBitmap { get; set; }
         public Mandelbrot.IPlaneDimensions CurrentIPlaneBounds { get { return currentIPlaneBounds; } }
