@@ -27,7 +27,6 @@ namespace MandelbrotGenerator
         public double FrequencyScale { get; set; } = 1;
         public double PhaseOffset { get; set; } = 0;
         public int Pixels { get; set; }
-        public bool Preview { get; set; }
 
         public MainDisplay()
         {
@@ -123,14 +122,6 @@ namespace MandelbrotGenerator
             }
         }
 
-        private void pixelCountTextbox_TextChanged(object sender, EventArgs e)
-        {
-            if (int.TryParse(pixelCountTextbox.Text, out int value))
-            {
-                Pixels = value;
-            }
-        }
-
         private void PreviewImage()
         {
             if (ValidateInputs())
@@ -141,13 +132,7 @@ namespace MandelbrotGenerator
 
         private bool ValidateInputs()
         {
-            bool valid = false;
-
-            if (MaximumRealValue > MinimumRealValue && MaximumImaginaryValue > MinimumImaginaryValue && Preview)
-            {
-                valid = true;
-            }
-            return valid;
+            return (MaximumRealValue > MinimumRealValue && MaximumImaginaryValue > MinimumImaginaryValue);
         }
 
         private void saveImageButton_Click(object sender, EventArgs e)
