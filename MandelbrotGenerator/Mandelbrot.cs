@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Numerics;
 
 namespace MandelbrotGenerator
 {
@@ -14,7 +15,7 @@ namespace MandelbrotGenerator
         /// <summary>
         /// Default coordinates, in the imaginary plane, to capture the whole Mandelbrot set,
         /// </summary>
-        public IPlaneDimensions DefaultDimensions { get; } = new IPlaneDimensions(-2, 1.1, -1.3, 1.3);
+        public static IPlaneDimensions DefaultIPlaneDimensions { get; } = new IPlaneDimensions(-2, 1.1, -1.3, 1.3);
 
         /// <summary>
         /// Precision coordinate in the imaginary plane.
@@ -116,9 +117,64 @@ namespace MandelbrotGenerator
         /// <summary>
         /// Underlying mathematics to generate the images. 
         /// </summary>
-        private static class Mathematics
+        public static class Mathematics
         {
-            
+            /// <summary>
+            /// Takes an empty bitmap, and corresponding bounds in the imaginary plane to generate the Mandelbrot Set, pixel by pixel.
+            /// </summary>
+            /// <param name="inputBitmap"></param>
+            /// <param name="iPlaneDimensions"></param>
+            public static void GenerateMandelbrotImage(ref Bitmap emptyBitmap, IPlaneDimensions iPlaneDimensions, double frequencyScale, double phaseOffset)
+            {
+                double scalingX = iPlaneDimensions.GetRealRange() / emptyBitmap.Width;
+                double scalingY = iPlaneDimensions.GetImaginaryRange() / emptyBitmap.Height;
+                double delta = Math.Abs(scalingX - scalingY);
+                if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions");
+                double scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical.
+
+                for (int x = 0; x < emptyBitmap.Width; x++)
+                {
+                    for (int y = 0; y < emptyBitmap.Height; y++)
+                    {
+                        int a = 255;
+
+                        IPoint point = new IPoint(scaling, iPlaneDimensions, new Point(x, y));
+                        int sample = GetIteratedIntegerValue(point);
+
+                        double trigScaling = 0.0246;
+
+                        int r = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset) * 127 + 128);
+                        int g = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset - (2 * Math.PI / 3)) * 127 + 128);
+                        int b = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * sample - phaseOffset - (4 * Math.PI / 3)) * 127 + 128);
+
+                        emptyBitmap.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Executes iterative equation to determine stability. High integer values indicate instability (in very general terms).
+            /// </summary>
+            /// <param name="scaledX"></param>
+            /// <param name="scaledY"></param>
+            /// <returns></returns>
+            private static int GetIteratedIntegerValue(IPoint point)
+            {
+                int count = 0;
+                Complex complexNumber = new Complex(point.X, point.I);
+
+                Complex iteratedComplexNumber = complexNumber;
+
+                while (count < 255 && !iteratedComplexNumber.Magnitude.Equals(0) && iteratedComplexNumber.Magnitude < 2)
+                {
+                    iteratedComplexNumber = Complex.Add(
+                        Complex.Pow(iteratedComplexNumber, 2),
+                        complexNumber);
+                    count++;
+                }
+
+                return count;
+            }
         }
     }
 }
