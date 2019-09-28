@@ -17,13 +17,17 @@ namespace MandelbrotGenerator
         public int PictureHeight { get; set; }
         public double RealRange { get; set; }
         public double ImaginaryRange { get; set; }
-        public double MinimumRealValue { get; set; }
-        public double MinimumImaginaryValue { get; set; }
+        public double MinimumRealValue { get; set; } = -2;
+        public double MaximumRealValue { get; set; } = 1.1;
+        public double MinimumImaginaryValue { get; set; } = -1.3;
+        public double MaximumImaginaryValue { get; set; } = 1.3;
         public double ScalingValue { get; set; }
         public int PreviewPixelCount { get; } = 250;
         public Bitmap CurrentImage { get; set; }
         public double FrequencyScale { get; set; } = 1;
         public double PhaseOffset { get; set; } = 0;
+        public int Pixels { get; set; }
+        public bool Preview { get; set; }
 
         public MainDisplay()
         {
@@ -34,13 +38,13 @@ namespace MandelbrotGenerator
         public void GenerateImage(double maxR, double minR, double maxI, double minI, int pixelCount)
         {
             int specifiedPixels = pixelCount;
-            double maximumRealValue = maxR;
+            MaximumRealValue = maxR;
             MinimumRealValue = minR;
-            double maximumImaginaryValue = maxI;
+            MaximumImaginaryValue = maxI;
             MinimumImaginaryValue = minI;
 
-            RealRange = maximumRealValue - MinimumRealValue;
-            ImaginaryRange = maximumImaginaryValue - MinimumImaginaryValue;
+            RealRange = MaximumRealValue - MinimumRealValue;
+            ImaginaryRange = MaximumImaginaryValue - MinimumImaginaryValue;
 
             double aspectRatio = (RealRange > ImaginaryRange) ? RealRange / ImaginaryRange : ImaginaryRange / RealRange;
             int resultantPixels = (int)(aspectRatio * specifiedPixels);
@@ -57,8 +61,8 @@ namespace MandelbrotGenerator
                 {
                     int a = 255;
 
-                    PointF point = GetFloatingPointValue(x, y);
-                    int sample = IterateValue(point);
+                    GetFloatingPointValue(x, y, out double scaledX, out double scaledY);
+                    int sample = IterateValue(scaledX, scaledY);
 
                     double trigScaling = 0.0246;
 
@@ -81,18 +85,22 @@ namespace MandelbrotGenerator
         /// <param name="pixelX"></param>
         /// <param name="pixelY"></param>
         /// <returns></returns>
-        public PointF GetFloatingPointValue(int pixelX, int pixelY)
+        public void GetFloatingPointValue(int pixelX, int pixelY, out double ScaledX, out double ScaledY)
         {
-            float scaledX = (float)((ScalingValue * pixelX) + MinimumRealValue);
-            float scaledY = (float)((ScalingValue * pixelY) + MinimumImaginaryValue);
-
-            return new PointF(scaledX, scaledY);
+            ScaledX = ((ScalingValue * pixelX) + MinimumRealValue);
+            ScaledY = ((ScalingValue * pixelY) + MinimumImaginaryValue);
         }
 
-        public int IterateValue(PointF complexPoint)
+        /// <summary>
+        /// Executes the Mandelbrot iteration to determine stability. High numbers indicate instability (in very general terms).
+        /// </summary>
+        /// <param name="scaledX"></param>
+        /// <param name="scaledY"></param>
+        /// <returns></returns>
+        public int IterateValue(double scaledX, double scaledY)
         {
             int count = 0;
-            Complex complexNumber = new Complex(complexPoint.X, complexPoint.Y);
+            Complex complexNumber = new Complex(scaledX, scaledY);
 
             Complex iteratedComplexNumber = complexNumber;
 
@@ -107,69 +115,11 @@ namespace MandelbrotGenerator
             return count;
         }
 
-        public double MaxR { get; set; } = 2;
-        public double MinR { get; set; } = -2;
-        public double MaxI { get; set; } = 2;
-        public double MinI { get; set; } = -2;
-        public int Pixels { get; set; }
-
         private void generateImageButton_Click(object sender, EventArgs e)
         {
             if (ValidateInputs())
             {
-                GenerateImage(MaxR, MinR, MaxI, MinI, Pixels);
-            }
-        }
-
-        private void maxImaginaryTextbox_TextChanged(object sender, EventArgs e)
-        {
-            if (double.TryParse(maxImaginaryTextbox.Text, out double value))
-            {
-                MaxI = value;
-
-                if (ValidateInputs())
-                {
-                    PreviewImage();
-                }
-            }
-        }
-
-        private void minImaginaryTextbox_TextChanged(object sender, EventArgs e)
-        {
-            if (double.TryParse(minImaginaryTextbox.Text, out double value))
-            {
-                MinI = value;
-
-                if (ValidateInputs())
-                {
-                    PreviewImage();
-                }
-            }
-        }
-
-        private void maxRealTextbox_TextChanged(object sender, EventArgs e)
-        {
-            if (double.TryParse(maxRealTextbox.Text, out double value))
-            {
-                MaxR = value;
-
-                if (ValidateInputs())
-                {
-                    PreviewImage();
-                }
-            }
-        }
-
-        private void minRealTextbox_TextChanged(object sender, EventArgs e)
-        {
-            if (double.TryParse(minRealTextbox.Text, out double value))
-            {
-                MinR = value;
-
-                if (ValidateInputs())
-                {
-                    PreviewImage();
-                }
+                GenerateImage(MaximumRealValue, MinimumRealValue, MaximumImaginaryValue, MinimumImaginaryValue, Pixels);
             }
         }
 
@@ -183,14 +133,17 @@ namespace MandelbrotGenerator
 
         private void PreviewImage()
         {
-            GenerateImage(MaxR, MinR, MaxI, MinI, PreviewPixelCount);
+            if (ValidateInputs())
+            {
+                GenerateImage(MaximumRealValue, MinimumRealValue, MaximumImaginaryValue, MinimumImaginaryValue, PreviewPixelCount);
+            }
         }
 
         private bool ValidateInputs()
         {
             bool valid = false;
 
-            if (MaxR > MinR && MaxI > MinI)
+            if (MaximumRealValue > MinimumRealValue && MaximumImaginaryValue > MinimumImaginaryValue && Preview)
             {
                 valid = true;
             }
@@ -208,12 +161,22 @@ namespace MandelbrotGenerator
             CurrentImage.Save(path);
         }
 
+        /// <summary>
+        /// Edits the color map of the image.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void phaseTrackBar_Scroll(object sender, EventArgs e)
         {
             PhaseOffset = phaseTrackBar.Value * 0.628;
             PreviewImage();
         }
 
+        /// <summary>
+        /// Edits the color map of the image.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frequencyTrackBar_Scroll(object sender, EventArgs e)
         {
             FrequencyScale = frequencyTrackBar.Value;
