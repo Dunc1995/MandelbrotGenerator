@@ -129,7 +129,7 @@ namespace MandelbrotGenerator
                 double scalingX = iPlaneDimensions.GetRealRange() / emptyBitmap.Width;
                 double scalingY = iPlaneDimensions.GetImaginaryRange() / emptyBitmap.Height;
                 double delta = Math.Abs(scalingX - scalingY);
-                if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions");
+                if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions! They need identical aspect ratios.");
                 double scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical.
 
                 for (int x = 0; x < emptyBitmap.Width; x++)
