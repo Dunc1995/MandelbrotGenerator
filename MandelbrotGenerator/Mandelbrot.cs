@@ -14,14 +14,29 @@ namespace MandelbrotGenerator
         /// <summary>
         /// Default coordinates, in the imaginary plane, to capture the whole Mandelbrot set,
         /// </summary>
-        public Dimensions DefaultDimensions { get; } = new Dimensions(-2, 1.1, -1.3, 1.3);
+        public IPlaneDimensions DefaultDimensions { get; } = new IPlaneDimensions(-2, 1.1, -1.3, 1.3);
 
         /// <summary>
-        /// Object for storing readonly dimensions in the imaginary plane.
+        /// Precision coordinate in the imaginary plane.
         /// </summary>
-        public class Dimensions
+        public class IPoint
         {
-            public Dimensions(double minimumRealValue, double maximumRealValue, double minimumImaginaryValue, double maximumImaginaryValue)
+            public IPoint(double scalingValue, IPlaneDimensions iPlaneDimensions, Point point)
+            {
+                X = ((scalingValue * point.X) + iPlaneDimensions.MinimumRealValue);
+                I = ((scalingValue * point.Y) + iPlaneDimensions.MinimumImaginaryValue);
+            }
+
+            public double X { get; }
+            public double I { get; }
+        }
+
+        /// <summary>
+        /// Object for storing readonly, rectangular dimensions in the imaginary plane.
+        /// </summary>
+        public class IPlaneDimensions
+        {
+            public IPlaneDimensions(double minimumRealValue, double maximumRealValue, double minimumImaginaryValue, double maximumImaginaryValue)
             {
                 string exceptionMessage = "Bad dimensions! max values should be greater than min values.";
                 if (maximumRealValue < minimumRealValue || maximumImaginaryValue < minimumImaginaryValue) throw new Exception(exceptionMessage);
@@ -54,9 +69,8 @@ namespace MandelbrotGenerator
             /// <param name="uiImage"></param>
             /// <param name="iPlaneDimensions"></param>
             /// <returns></returns>
-            public static Bitmap GetEmptyPreviewBitmap(PictureBox uiImage, Dimensions iPlaneDimensions)
+            public static Bitmap GetEmptyPreviewBitmap(PictureBox uiImage, IPlaneDimensions iPlaneDimensions)
             {
-                double scaling;
                 int height;
                 int width;
                 double pictureAspectRatio = uiImage.Height / uiImage.Width;
@@ -76,13 +90,13 @@ namespace MandelbrotGenerator
             }
 
             /// <summary>
-            /// Takes a known pixel range and calculates the unknown pixel range given the set of iPlaneDimensions.
+            /// Takes a known pixel range and calculates the unknown pixel range given a set of iPlaneDimensions.
             /// </summary>
             /// <param name="existingPixelRange"></param>
             /// <param name="isPixelRangeOnXAxis"></param>
             /// <param name="iPlaneDimensions"></param>
             /// <returns></returns>
-            private static int GetCorrespondingPixelCount(int existingPixelRange, bool isPixelRangeOnXAxis, Dimensions iPlaneDimensions)
+            private static int GetCorrespondingPixelCount(int existingPixelRange, bool isPixelRangeOnXAxis, IPlaneDimensions iPlaneDimensions)
             {
                 int correspondingPixels;
                 if (isPixelRangeOnXAxis)

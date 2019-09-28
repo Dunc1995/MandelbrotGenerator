@@ -27,11 +27,11 @@ namespace MandelbrotGenerator
         public double FrequencyScale { get; set; } = 1;
         public double PhaseOffset { get; set; } = 0;
         public int Pixels { get; set; }
-
+        private ApplicationWorker Application { get; } = new ApplicationWorker();
         public MainDisplay()
         {
             InitializeComponent();
-            PreviewImage();
+            Application.StartupMain(ref pictureBox1);
         }
 
         public void GenerateImage(double maxR, double minR, double maxI, double minI, int pixelCount)
@@ -60,34 +60,20 @@ namespace MandelbrotGenerator
                 {
                     int a = 255;
 
-                    GetFloatingPointValue(x, y, out double scaledX, out double scaledY);
-                    int sample = IterateValue(scaledX, scaledY);
+                    //GetFloatingPointValue(x, y, out double scaledX, out double scaledY);
+                    //int sample = IterateValue(scaledX, scaledY);
 
-                    double trigScaling = 0.0246;
+                    //double trigScaling = 0.0246;
 
-                    int r = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset) * 127 + 128);
-                    int g = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (2 * Math.PI / 3)) * 127 + 128);
-                    int b = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (4 * Math.PI / 3)) * 127 + 128);
+                    //int r = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset) * 127 + 128);
+                    //int g = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (2 * Math.PI / 3)) * 127 + 128);
+                    //int b = (int)Math.Round(Math.Sin(FrequencyScale * trigScaling * sample - PhaseOffset - (4 * Math.PI / 3)) * 127 + 128);
 
-                    CurrentImage.SetPixel(x, y, Color.FromArgb(a, r, g, b));
+                    //CurrentImage.SetPixel(x, y, Color.FromArgb(a, r, g, b));
                 }
             }
            
             pictureBox1.Image = CurrentImage;
-        }
-
-        /// <summary>
-        /// Translate pixel coordinates to dimensions within the complex plane.
-        /// Magnitudes greater than 2 will not be within the Mandelbrot Set, therefore
-        /// this determines the bounds within the pixel dimensions.
-        /// </summary>
-        /// <param name="pixelX"></param>
-        /// <param name="pixelY"></param>
-        /// <returns></returns>
-        public void GetFloatingPointValue(int pixelX, int pixelY, out double ScaledX, out double ScaledY)
-        {
-            ScaledX = ((ScalingValue * pixelX) + MinimumRealValue);
-            ScaledY = ((ScalingValue * pixelY) + MinimumImaginaryValue);
         }
 
         /// <summary>
