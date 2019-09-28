@@ -17,12 +17,6 @@ namespace MandelbrotGenerator
         public Bitmap CurrentImage { get; set; }
         private ApplicationWorker Application { get; } = new ApplicationWorker();
         private bool IsDrawingActive { get; set; } = false;
-        int selectX;
-        int selectY;
-        double MinR { get; set; }
-        double MaxR { get; set; }
-        double MinI { get; set; }
-        double MaxI { get; set; }
 
         public Pen selectPen;
         public MainDisplay()
@@ -73,45 +67,9 @@ namespace MandelbrotGenerator
 
         private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            //validate if right-click was trigger
             if (IsDrawingActive)
             {
-                //refresh picture box
-                pictureBox1.Refresh();
-                //set corner square to mouse coordinates
-                double selectWidth = e.X - selectX;
-                double selectHeight = e.Y - selectY;
-                int absSelectWidth = Math.Abs(e.X - selectX);
-                int absSelectHeight = Math.Abs(e.Y - selectY);
-                int posX1 = (selectWidth >= 0) ? selectX : e.X;
-                int posY1 = (selectHeight >= 0) ? selectY : e.Y;
-                int posX2 = (selectWidth >= 0) ? e.X: selectX;
-                int posY2 = (selectHeight >= 0) ? e.Y: selectY;
-                int offsetX = ((pictureBox1.Width - pictureBox1.Image.Width) / 2);
-                int offsetY = ((pictureBox1.Height - pictureBox1.Image.Height) / 2);
-
-                MandelbrotUtils.IPoint point1 = new MandelbrotUtils.IPoint(Application.CurrentIPlaneBounds, new Point(posX1 - offsetX, posY1 - offsetY));
-                MandelbrotUtils.IPoint point2 = new MandelbrotUtils.IPoint(Application.CurrentIPlaneBounds, new Point(posX2 - offsetX, posY2 - offsetY));
-
-                MinR = (point1.R > point2.R) ? point2.R : point1.R;
-                MaxR = (point1.R < point2.R) ? point2.R : point1.R;
-                MinI = (point1.I > point2.I) ? point2.I : point1.I;
-                MaxI = (point1.I < point2.I) ? point2.I : point1.I;               
-
-                //draw dotted rectangle
-                FontFamily fontFamily = new FontFamily("Arial");
-                Font font = new Font(
-                   fontFamily,
-                   10,
-                   FontStyle.Regular,
-                   GraphicsUnit.Point);
-                SolidBrush solidBrush = new SolidBrush(Application.ContrastingColor);
-
-
-                Rectangle rect = new Rectangle(posX1, posY1, absSelectWidth, absSelectHeight);
-                pictureBox1.CreateGraphics().DrawRectangle(selectPen, rect);
-                pictureBox1.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", point1.R, point1.I), font, solidBrush, new PointF(posX1, posY1));
-                pictureBox1.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", point2.R, point2.I), font, solidBrush, new PointF(posX2, posY2));
+                Application.UpdateRectangleGraphics(ref pictureBox1, e);
             }
         }
 
@@ -121,15 +79,12 @@ namespace MandelbrotGenerator
             {
                 if (!IsDrawingActive)
                 {
-                    selectX = e.X;
-                    selectY = e.Y;
-                    selectPen = new Pen(Application.ContrastingColor, 1);
-                    selectPen.DashStyle = DashStyle.Dot;
+                    Application.FirstClickCoords = new Point(e.X, e.Y);
                 }
                 else
                 {
                     pictureBox1.Invalidate();
-                    MandelbrotUtils.IPlaneDimensions iPlaneDimensions = new MandelbrotUtils.IPlaneDimensions(MinR, MaxR, MinI, MaxI);
+                    IPlaneBoundingRectangle iPlaneDimensions = new IPlaneBoundingRectangle(Application.MinR, Application.MaxR, Application.MinI, Application.MaxI);
                     Application.UpdateIPlaneAndBitmapDimensions(ref pictureBox1, iPlaneDimensions);
                     ExecuteBackgroundWorker();
                 }
@@ -146,7 +101,7 @@ namespace MandelbrotGenerator
         // This event handler is where the time-consuming work is done.
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            Application.PreviewMandelbrotImage(ref pictureBox1, Application.CurrentIPlaneBounds);
+            Application.PreviewMandelbrotImage(ref pictureBox1);
         }
 
         // This event handler updates the progress.

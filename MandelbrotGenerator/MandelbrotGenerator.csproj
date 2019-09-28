@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationWorker.cs" />
+    <Compile Include="IPlaneBoundingRectangle.cs" />
     <Compile Include="MainDisplay.cs">
       <SubType>Form</SubType>
     </Compile>
