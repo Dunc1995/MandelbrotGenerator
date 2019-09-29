@@ -75,7 +75,7 @@ namespace MandelbrotGenerator
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 if (!IsDrawingActive)
                 {

@@ -80,8 +80,8 @@ namespace MandelbrotGenerator
             Rectangle rect = new Rectangle(posX1, posY1, absSelectWidth, absSelectHeight);
 
             pictureBox.CreateGraphics().DrawRectangle(Pen, rect);
-            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", iPoint1.X, iPoint1.Y), font, Brush, point1);
-            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", iPoint2.X, iPoint2.Y), font, Brush, point2);
+            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", iPoint1.X, iPoint1.Y), font, Brush, new Point(posX1, posY1));
+            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1}", iPoint2.X, iPoint2.Y), font, Brush, new Point(posX2, posY2));
         }
 
         private static Color GetContrastingColor(Color color)
