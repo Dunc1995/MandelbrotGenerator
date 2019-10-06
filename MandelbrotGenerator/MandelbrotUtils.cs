@@ -16,7 +16,6 @@ namespace MandelbrotGenerator
         /// Default coordinates, in the imaginary plane, to capture the whole Mandelbrot set,
         /// </summary>
         public static IPlaneBoundingRectangle DefaultIPlaneDimensions { get; } = new IPlaneBoundingRectangle(-2, 1.1, -1.3, 1.3);
-        private static double Scaling { get { return scaling; } }
         private static double scaling { get; set; }
 
         /// <summary>

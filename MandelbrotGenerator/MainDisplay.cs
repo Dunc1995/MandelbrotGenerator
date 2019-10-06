@@ -83,9 +83,8 @@ namespace MandelbrotGenerator
                 }
                 else
                 {
-                    pictureBox1.Invalidate();
-                    IPlaneBoundingRectangle iPlaneDimensions = new IPlaneBoundingRectangle(Application.MinR, Application.MaxR, Application.MinI, Application.MaxI);
-                    Application.UpdateIPlaneAndBitmapDimensions(ref pictureBox1, iPlaneDimensions);
+                    Application.UpdateCurrentIplaneBoundsAndBitmap(pictureBox1);
+                    pictureBox1.Invalidate();                   
                     ExecuteBackgroundWorker();
                 }
 
