@@ -30,19 +30,19 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.frequencyTrackBar = new System.Windows.Forms.TrackBar();
+            this.phaseTrackBar = new System.Windows.Forms.TrackBar();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.generateImageButton = new System.Windows.Forms.Button();
             this.saveImageButton = new System.Windows.Forms.Button();
-            this.frequencyTrackBar = new System.Windows.Forms.TrackBar();
-            this.phaseTrackBar = new System.Windows.Forms.TrackBar();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            this.optionsGroupBox.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.frequencyTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.phaseTrackBar)).BeginInit();
+            this.optionsGroupBox.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -75,6 +75,26 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(131, 61);
             this.tableLayoutPanel1.TabIndex = 5;
+            // 
+            // frequencyTrackBar
+            // 
+            this.frequencyTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.frequencyTrackBar.Location = new System.Drawing.Point(3, 33);
+            this.frequencyTrackBar.Name = "frequencyTrackBar";
+            this.frequencyTrackBar.Size = new System.Drawing.Size(125, 25);
+            this.frequencyTrackBar.TabIndex = 13;
+            this.frequencyTrackBar.Scroll += new System.EventHandler(this.frequencyTrackBar_Scroll);
+            // 
+            // phaseTrackBar
+            // 
+            this.phaseTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.phaseTrackBar.Location = new System.Drawing.Point(3, 3);
+            this.phaseTrackBar.Name = "phaseTrackBar";
+            this.phaseTrackBar.Size = new System.Drawing.Size(125, 24);
+            this.phaseTrackBar.TabIndex = 12;
+            this.phaseTrackBar.Scroll += new System.EventHandler(this.phaseTrackBar_Scroll);
             // 
             // optionsGroupBox
             // 
@@ -130,26 +150,6 @@
             this.saveImageButton.UseVisualStyleBackColor = true;
             this.saveImageButton.Click += new System.EventHandler(this.saveImageButton_Click);
             // 
-            // frequencyTrackBar
-            // 
-            this.frequencyTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.frequencyTrackBar.Location = new System.Drawing.Point(3, 33);
-            this.frequencyTrackBar.Name = "frequencyTrackBar";
-            this.frequencyTrackBar.Size = new System.Drawing.Size(125, 25);
-            this.frequencyTrackBar.TabIndex = 13;
-            this.frequencyTrackBar.Scroll += new System.EventHandler(this.frequencyTrackBar_Scroll);
-            // 
-            // phaseTrackBar
-            // 
-            this.phaseTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.phaseTrackBar.Location = new System.Drawing.Point(3, 3);
-            this.phaseTrackBar.Name = "phaseTrackBar";
-            this.phaseTrackBar.Size = new System.Drawing.Size(125, 24);
-            this.phaseTrackBar.TabIndex = 12;
-            this.phaseTrackBar.Scroll += new System.EventHandler(this.phaseTrackBar_Scroll);
-            // 
             // backgroundWorker1
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
@@ -167,13 +167,14 @@
             this.Name = "MainDisplay";
             this.ShowIcon = false;
             this.Text = "Mandelbrot Generator";
+            this.SizeChanged += new System.EventHandler(this.MainDisplay_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.optionsGroupBox.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.frequencyTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.phaseTrackBar)).EndInit();
+            this.optionsGroupBox.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

@@ -15,13 +15,14 @@ namespace MandelbrotGenerator
     public partial class MainDisplay : Form
     {
         public Bitmap CurrentImage { get; set; }
-        private ApplicationWorker Application { get; } = new ApplicationWorker();
+        private ApplicationWorker Application { get; }
         private bool IsDrawingActive { get; set; } = false;
 
         public Pen selectPen;
         public MainDisplay()
         {
             InitializeComponent();
+            Application = new ApplicationWorker(pictureBox1);
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
             ExecuteBackgroundWorker();
@@ -74,15 +75,16 @@ namespace MandelbrotGenerator
         }
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
-        {
+        {         
             if (e.Button == MouseButtons.Left)
-            {
+            {               
                 if (!IsDrawingActive)
                 {
-                    Application.FirstClickCoords = new Point(e.X, e.Y);
+                    Application.SetFirstClick(new Point(e.X, e.Y));
                 }
                 else
                 {
+                    Application.ConfirmSelection();
                     Application.UpdateCurrentIplaneBoundsAndBitmap(pictureBox1);
                     pictureBox1.Invalidate();                   
                     ExecuteBackgroundWorker();
@@ -124,6 +126,11 @@ namespace MandelbrotGenerator
             //{
             //    resultLabel.Text = "Done!";
             //}
+        }
+
+        private void MainDisplay_SizeChanged(object sender, EventArgs e)
+        {
+            Application.UpdateCurrentIplaneBoundsAndBitmap(pictureBox1);
         }
     }
 }

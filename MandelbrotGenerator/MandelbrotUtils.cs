@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,6 @@ namespace MandelbrotGenerator
 {
     public class MandelbrotUtils
     {
-
-        /// <summary>
-        /// Default coordinates, in the imaginary plane, to capture the whole Mandelbrot set,
-        /// </summary>
-        public static IPlaneBoundingRectangle DefaultIPlaneDimensions { get; } = new IPlaneBoundingRectangle(-2, 1.1, -1.3, 1.3);
-        private static double scaling { get; set; }
-
         /// <summary>
         /// Compares dimensions in the imaginary place with dimensions
         /// of the input Picture Box dimensions and returns an empty Bitmap
@@ -33,12 +27,12 @@ namespace MandelbrotGenerator
 
             if (uiImage.Height < uiImage.Width)
             {
-                height = (uiImage.Height <= 500) ? uiImage.Height : 500;
+                height = uiImage.Height;
                 width = GetCorrespondingPixelCount(height, false, iPlaneBoundingRectangle);
             }
             else
             {
-                width = (uiImage.Width <= 500) ? uiImage.Width : 500;
+                width = uiImage.Width;
                 height = GetCorrespondingPixelCount(width, true, iPlaneBoundingRectangle);
             }
 
@@ -50,21 +44,20 @@ namespace MandelbrotGenerator
         /// </summary>
         /// <param name="inputBitmap"></param>
         /// <param name="iPlaneDimensions"></param>
-        public static void GenerateMandelbrotImage(ref Bitmap emptyBitmap, IPlaneBoundingRectangle iPlaneBoundingRectangle, double frequencyScale, double phaseOffset)
+        public static Bitmap GetMandelbrotImage(Bitmap emptyBitmap, IPlaneBoundingRectangle iPlaneBoundingRectangle, double frequencyScale, double phaseOffset)
         {
-            double scalingX = iPlaneBoundingRectangle.GetRealRange() / emptyBitmap.Width;
-            double scalingY = iPlaneBoundingRectangle.GetImaginaryRange() / emptyBitmap.Height;
-            double delta = Math.Abs(scalingX - scalingY);
-            if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions! They need identical aspect ratios.");
-            scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical.
+            Bitmap NewImage = emptyBitmap;
+            ConcurrentBag<int[]> list = new ConcurrentBag<int[]>();
+            int height = NewImage.Height;
+            int width = NewImage.Width;
 
-            for (int x = 0; x < emptyBitmap.Width; x++)
+            Parallel.For(0, width, x =>
             {
-                for (int y = 0; y < emptyBitmap.Height; y++)
+                Parallel.For(0, height, y =>
                 {
                     int a = 255;
 
-                    IPoint point = new IPoint(iPlaneBoundingRectangle, new Point(x, y));
+                    Complex point = iPlaneBoundingRectangle.GetTranslatedCoordinates(new Point(x, y));
                     int iterationCount = GetIteratedIntegerValue(point);
 
                     double trigScaling = 0.0246;
@@ -72,10 +65,17 @@ namespace MandelbrotGenerator
                     int r = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset) * 127 + 128);
                     int g = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset - (2 * Math.PI / 3)) * 127 + 128);
                     int b = (int)Math.Round(Math.Sin(frequencyScale * trigScaling * iterationCount - phaseOffset - (4 * Math.PI / 3)) * 127 + 128);
+                    int[] val = { x, y, a, r, g, b };
+                    list.Add(val);
+                });
+            });
 
-                    emptyBitmap.SetPixel(x, y, Color.FromArgb(a, r, g, b));
-                }
+            foreach (int[] entry in list)
+            {
+                NewImage.SetPixel(entry[0], entry[1], Color.FromArgb(entry[2], entry[3], entry[4], entry[5]));
             }
+
+            return NewImage;
         }
 
         /// <summary>
@@ -107,10 +107,9 @@ namespace MandelbrotGenerator
         /// <param name="scaledX"></param>
         /// <param name="scaledY"></param>
         /// <returns></returns>
-        private static int GetIteratedIntegerValue(IPoint point)
+        private static int GetIteratedIntegerValue(Complex complexNumber)
         {
             int count = 0;
-            Complex complexNumber = new Complex(point.R, point.I);
 
             Complex iteratedComplexNumber = complexNumber;
 
@@ -123,27 +122,6 @@ namespace MandelbrotGenerator
             }
 
             return count;
-        }
-
-        public static PointF GetTranslatedCoordinates(IPlaneBoundingRectangle bounds, Point pixelPoint)
-        {
-            IPoint point = new IPoint(bounds, pixelPoint);
-            return new PointF((float)point.R, (float)point.I);
-        }
-
-        /// <summary>
-        /// Precision coordinate in the imaginary plane.
-        /// </summary>
-        private class IPoint
-        {
-            public IPoint(IPlaneBoundingRectangle iPlaneBoundingRectangle, Point point)
-            {
-                R = ((scaling * point.X) + iPlaneBoundingRectangle.MinimumRealValue);
-                I = ((scaling * point.Y) + iPlaneBoundingRectangle.MinimumImaginaryValue);
-            }
-
-            public double R { get; }
-            public double I { get; }
         }
     }
 }
