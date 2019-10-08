@@ -58,6 +58,7 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
+            this.pictureBox1.Validated += new System.EventHandler(this.PictureBox1_Validated);
             // 
             // tableLayoutPanel1
             // 
@@ -167,7 +168,6 @@
             this.Name = "MainDisplay";
             this.ShowIcon = false;
             this.Text = "Mandelbrot Generator";
-            this.SizeChanged += new System.EventHandler(this.MainDisplay_SizeChanged);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();

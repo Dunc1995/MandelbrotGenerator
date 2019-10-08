@@ -14,21 +14,23 @@ namespace MandelbrotGenerator
 {
     class ApplicationWorker
     {
-        public ApplicationWorker(PictureBox pictureBox)
+        public ApplicationWorker()
         {
-            UpdateCurrentIplaneBoundsAndBitmap(pictureBox);
+            CurrentIPlaneBounds = new IPlaneBoundingRectangle(FirstComplex, SecondComplex);
         }
 
         public double FrequencyScale { get; set; } = 1;
         public double PhaseOffset { get; set; } = 0;
         private Point FirstClickCoords { get; set; }
+        private Point FirstRawCoords { get; set; }
+        private Point SecondRawCoords { get; set; }
+        private Rectangle UserSelectionRectangle { get; set; }
         private Complex FirstComplex { get; set; } = new Complex(-2, -1.3);
         private Complex SecondComplex { get; set; } = new Complex(1.1, 1.3);
         private Complex PendingFirstComplex { get; set; }
         private Complex PendingSecondComplex { get; set; }
         private static Color ContrastingColor { get; set; }
         private IPlaneBoundingRectangle CurrentIPlaneBounds { get; set; }
-        private Bitmap CurrentEmptyBitmap { get; set; }
         private Pen Pen { get; set; }
         private static FontFamily FontFamily { get; } = new FontFamily("Arial");
         private static Font Font { get; } = new Font(FontFamily, 10, FontStyle.Regular, GraphicsUnit.Point);
@@ -36,41 +38,20 @@ namespace MandelbrotGenerator
 
         public void PreviewMandelbrotImage(ref PictureBox pictureBox)
         {            
-            Bitmap mandelbrotImage = MandelbrotUtils.GetMandelbrotImage(CurrentEmptyBitmap, CurrentIPlaneBounds, FrequencyScale, PhaseOffset);
+            Bitmap mandelbrotImage = MandelbrotUtils.GetMandelbrotImage(CurrentIPlaneBounds, FrequencyScale, PhaseOffset);
             ContrastingColor = GetContrastingColor(mandelbrotImage.GetPixel(0, 0));
             Pen = new Pen(ContrastingColor, 1){ DashStyle = DashStyle.Dot };
             Brush = new SolidBrush(ContrastingColor);
             pictureBox.Image = mandelbrotImage;
         }
 
-        public void UpdateRectangleGraphics(ref PictureBox pictureBox, MouseEventArgs e)
+        public void MouseMoveUpdate(ref PictureBox pictureBox, MouseEventArgs e)
         {
             //refresh picture box
             pictureBox.Refresh();
-            //set corner square to mouse coordinates
-            double selectWidth = e.X - FirstClickCoords.X;
-            double selectHeight = e.Y - FirstClickCoords.Y;
-            int absSelectWidth = Math.Abs(e.X - FirstClickCoords.X);
-            int absSelectHeight = Math.Abs(e.Y - FirstClickCoords.Y);
-            int posX1 = (selectWidth >= 0) ? FirstClickCoords.X : e.X;
-            int posY1 = (selectHeight >= 0) ? FirstClickCoords.Y : e.Y;
-            int posX2 = (selectWidth >= 0) ? e.X : FirstClickCoords.X;
-            int posY2 = (selectHeight >= 0) ? e.Y : FirstClickCoords.Y;
-
-            Bitmap scaledBitmap = ScalingUtils.GetZoomedBitmapDimensions(pictureBox);
-            int offsetX = ((pictureBox.Width - scaledBitmap.Width) / 2);
-            int offsetY = ((pictureBox.Height - scaledBitmap.Height) / 2);
-
-            Point point1 = new Point(posX1 - offsetX, posY1 - offsetY);
-            Point point2 = new Point(posX2 - offsetX, posY2 - offsetY);
-            PendingFirstComplex = CurrentIPlaneBounds.GetTranslatedCoordinates(point1);
-            PendingSecondComplex = CurrentIPlaneBounds.GetTranslatedCoordinates(point2);
-            
-            Rectangle rect = new Rectangle(posX1, posY1, absSelectWidth, absSelectHeight);
-
-            pictureBox.CreateGraphics().DrawRectangle(Pen, rect);
-            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1:#.###e+00}", PendingFirstComplex.Real, PendingFirstComplex.Imaginary), Font, Brush, new Point(posX1, posY1));
-            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1:#.###e+00}", PendingSecondComplex.Real, PendingSecondComplex.Imaginary), Font, Brush, new Point(posX2, posY2));
+            UpdateUserSelectionGraphics(e);
+            CalculateImaginaryCoordinates(ref pictureBox);
+            DrawUserSelection(ref pictureBox);
         }
 
         public void SetFirstClick(Point point)
@@ -82,17 +63,64 @@ namespace MandelbrotGenerator
         {
             FirstComplex = PendingFirstComplex;
             SecondComplex = PendingSecondComplex;
+            CurrentIPlaneBounds = new IPlaneBoundingRectangle(FirstComplex, SecondComplex);
+        }
+
+        public void UpdateUserSelectionGraphics(MouseEventArgs e)
+        {
+            int relativeXDistance = e.X - FirstClickCoords.X;
+            int relativeYDistance = e.Y - FirstClickCoords.Y;
+
+            //Raw PictureBox coordinates needed for drawing on the form.
+            int posX1 = (relativeXDistance >= 0) ? FirstClickCoords.X : e.X;
+            int posY1 = (relativeYDistance >= 0) ? FirstClickCoords.Y : e.Y;
+            int posX2 = (relativeXDistance >= 0) ? e.X : FirstClickCoords.X;
+            int posY2 = (relativeYDistance >= 0) ? e.Y : FirstClickCoords.Y;
+
+            int absSelectWidth = Math.Abs(FirstRawCoords.X - SecondRawCoords.X);
+            int absSelectHeight = Math.Abs(FirstRawCoords.Y - SecondRawCoords.Y);
+
+            FirstRawCoords = new Point(posX1, posY1);
+            SecondRawCoords = new Point(posX2, posY2);
+            UserSelectionRectangle = new Rectangle(FirstRawCoords.X, FirstRawCoords.Y, absSelectWidth, absSelectHeight);
+        }
+
+        private void CalculateImaginaryCoordinates(ref PictureBox pictureBox)
+        {           
+
+            Bitmap scaledBitmap = GetZoomedBitmapDimensions(pictureBox);
+            int offsetX = ((pictureBox.Width - scaledBitmap.Width) / 2);
+            int offsetY = ((pictureBox.Height - scaledBitmap.Height) / 2);
+
+            Point point1 = new Point(FirstRawCoords.X - offsetX, FirstRawCoords.Y - offsetY);
+            Point point2 = new Point(SecondRawCoords.X - offsetX, SecondRawCoords.Y - offsetY);
+            PendingFirstComplex = CurrentIPlaneBounds.GetTranslatedCoordinates(point1, scaledBitmap);
+            PendingSecondComplex = CurrentIPlaneBounds.GetTranslatedCoordinates(point2, scaledBitmap);
+        }
+
+        private void DrawUserSelection(ref PictureBox pictureBox)
+        {
+            pictureBox.CreateGraphics().DrawRectangle(Pen, UserSelectionRectangle);
+            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1:#.###e+00}", PendingFirstComplex.Real, PendingFirstComplex.Imaginary), Font, Brush, FirstRawCoords);
+            pictureBox.CreateGraphics().DrawString(string.Format("posx: {0:#.###e+00},\n posy:{1:#.###e+00}", PendingSecondComplex.Real, PendingSecondComplex.Imaginary), Font, Brush, SecondRawCoords);
+        }
+
+        private static Bitmap GetZoomedBitmapDimensions(PictureBox pictureBox)
+        {
+            int width;
+            int height;
+            double pictureBoxAR = (double)pictureBox.Height/pictureBox.Width;
+            double pictureBoxImageAR = (double)pictureBox.Image.Height / pictureBox.Image.Width;
+            bool ImgARIsGreaterThanPicBoxAR = pictureBoxImageAR > pictureBoxAR;
+            height = (ImgARIsGreaterThanPicBoxAR) ? pictureBox.Height : (int)(pictureBox.Width * pictureBoxImageAR);
+            width = (!ImgARIsGreaterThanPicBoxAR) ? pictureBox.Width : (int)(pictureBox.Height / pictureBoxImageAR);
+
+            return new Bitmap(width, height);
         }
 
         private static Color GetContrastingColor(Color color)
         {
             return Color.FromArgb(255 - color.R, 255 - color.G, 255 - color.B);
-        }
-        public void UpdateCurrentIplaneBoundsAndBitmap(PictureBox pictureBox)
-        {
-            CurrentIPlaneBounds = new IPlaneBoundingRectangle(FirstComplex, SecondComplex);
-            CurrentEmptyBitmap = MandelbrotUtils.GetEmptyPreviewBitmap(pictureBox, CurrentIPlaneBounds);
-            CurrentIPlaneBounds.SetScaling(CurrentEmptyBitmap);
         }
     }
 }

@@ -19,33 +19,66 @@ namespace MandelbrotGenerator
             MaximumReal = (complexPoint1.Real > complexPoint2.Real) ? complexPoint1.Real : complexPoint2.Real;
             MinimumImaginary = (complexPoint1.Imaginary < complexPoint2.Imaginary) ? complexPoint1.Imaginary : complexPoint2.Imaginary;
             MaximumImaginary = (complexPoint1.Imaginary > complexPoint2.Imaginary) ? complexPoint1.Imaginary : complexPoint2.Imaginary;
+            currentBitmap = GetEmptyBitmap(2);
+            SetScaling(currentBitmap);
         }
 
-        public double MinimumReal { get; }
-        public double MaximumReal { get; }
-        public double MinimumImaginary { get; }
-        public double MaximumImaginary { get; }
-        public double GetRealRange() { return MaximumReal - MinimumReal; }
-        public double GetImaginaryRange() { return MaximumImaginary - MinimumImaginary; }
-        public bool IsScalingSet { get { return isScalingSet; } }
-        private double scaling { get; set; }
-        private bool isScalingSet { get; set; } = false;
+        public double RealRange { get { return MaximumReal - MinimumReal; } }
+        public double ImaginaryRange { get { return MaximumImaginary - MinimumImaginary; } }
+        public Bitmap CurrentBitmap { get { return currentBitmap; } }
+        private double MinimumReal { get; }
+        private double MaximumReal { get; }
+        private double MinimumImaginary { get; }
+        private double MaximumImaginary { get; }
+        private double Scaling { get; set; }
+        private Bitmap currentBitmap { get; set; }
+
         public Complex GetTranslatedCoordinates(Point pixelPoint)
         {
-            if (!IsScalingSet) throw new Exception("Scaling has not been set or updated! Unable to find coordinates in the imaginary plane...");
-            double R = ((scaling * pixelPoint.X) + this.MinimumReal);
-            double I = ((scaling * pixelPoint.Y) + this.MinimumImaginary);
+            double R = ((Scaling * pixelPoint.X) + this.MinimumReal);
+            double I = ((Scaling * pixelPoint.Y) + this.MinimumImaginary);
             return new Complex(R, I);
         }
 
-        public void SetScaling(Bitmap bitmap)
+        public Complex GetTranslatedCoordinates(Point pixelPoint, Bitmap viewportBitmap)
         {
-            double scalingX = this.GetRealRange() / bitmap.Width;
-            double scalingY = this.GetImaginaryRange() / bitmap.Height;
+            double xMultiple = (double)currentBitmap.Width / viewportBitmap.Width;
+            double yMultiple = (double)currentBitmap.Height / viewportBitmap.Height;
+
+            pixelPoint.X = (int)(pixelPoint.X * xMultiple);
+            pixelPoint.Y = (int)(pixelPoint.Y * yMultiple);
+
+            double R = ((Scaling * pixelPoint.X) + this.MinimumReal);
+            double I = ((Scaling * pixelPoint.Y) + this.MinimumImaginary);
+            return new Complex(R, I);
+        }
+
+        public Bitmap GetEmptyBitmap(int quality)
+        {
+            int highestResolution;
+            int height;
+            int width;
+            bool heightIsGreaterThanWidth = ImaginaryRange > RealRange;
+
+            highestResolution = (quality > 10) ? 5000 : (quality <= 10 && quality > 0) ? 500 * quality : 500;
+
+            height = (heightIsGreaterThanWidth) ? highestResolution : (int)((ImaginaryRange * highestResolution) / RealRange);
+            width = (!heightIsGreaterThanWidth) ? highestResolution : (int)((RealRange * highestResolution) / ImaginaryRange);
+
+            return new Bitmap(width, height);
+        }
+
+        /// <summary>
+        /// Uses the input bitmap and calculates its pixel count's relative scale to the bounding rectangle within the imaginary plane.
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void SetScaling(Bitmap bitmap)
+        {
+            double scalingX = this.RealRange / bitmap.Width;
+            double scalingY = this.ImaginaryRange / bitmap.Height;
             double delta = Math.Abs(scalingX - scalingY);
             if (delta > 0.0001) throw new Exception("Specified imaginary plane bounds do not match the Bitmap dimensions! They need identical aspect ratios.");
-            scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical - otherwise scaling assumptions do not make sense.
-            isScalingSet = true;
+            Scaling = scalingX; //For the avoidance of doubt, scalingX and scalingY should be identical - otherwise scaling assumptions do not make sense.
         }
     }
 }
